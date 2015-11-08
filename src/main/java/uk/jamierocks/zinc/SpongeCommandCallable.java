@@ -88,6 +88,6 @@ class SpongeCommandCallable implements CommandCallable {
 
     @Override
     public Text getUsage(CommandSource source) {
-        return Texts.of();
+        return Texts.of(this.command.usage());
     }
 }

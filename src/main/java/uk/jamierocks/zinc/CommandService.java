@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class CommandService {
 
-    private static final Logger ZINC_LOGGER = LoggerFactory.getLogger("Zinc");
+    protected static final Logger ZINC_LOGGER = LoggerFactory.getLogger("Zinc");
 
     private final Game game;
 
@@ -97,10 +97,17 @@ public class CommandService {
         }
         for (CommandCallable commandCallable : subCommands.keySet()) {
             Command command = subCommands.get(commandCallable);
-            SimpleDispatcher dispatcher =
-                    (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
-                            .getCallable();
-            dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
+            if (this.game.getCommandDispatcher().get(command.parent()).isPresent() &&
+                    this.game.getCommandDispatcher().get(command.parent()).get()
+                            .getCallable() instanceof SimpleDispatcher) {
+                SimpleDispatcher dispatcher =
+                        (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
+                                .getCallable();
+                dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
+            } else {
+                ZINC_LOGGER.error(String.format("Sub command was registered, but parent command wasn't found: %s",
+                        command.parent()));
+            }
         }
     }
 }

@@ -71,6 +71,14 @@ public @interface Command {
     String description() default "";
 
     /**
+     * Gets the usage of this command.
+     * Converted to {@link Text}, using {@link Texts#of(String)}.
+     *
+     * @return the command's usage.
+     */
+    String usage() default "";
+
+    /**
      * Gets all the permissions associated with this command.
      * The {@link CommandSource} will have to have all permissions to be able to use the command.
      * Not having any permission, means that all users can use the command, use with caution!
