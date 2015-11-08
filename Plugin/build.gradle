@@ -15,6 +15,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.ellune.blossom'
 
 group = 'uk.jamierocks.zinc'
+archivesBaseName = 'ZincPlugin'
 description = 'ZincPlugin - Zinc in a plugin.'
 
 dependencies {
@@ -23,7 +24,7 @@ dependencies {
 
 blossom {
     replaceToken '@project.version@',
-            project.version, 'src/main/java/uk/jamierocks/zinc/ZincPlugin.java'
+            project.version, 'src/main/java/uk/jamierocks/zinc/plugin/ZincPlugin.java'
 }
 
 license {

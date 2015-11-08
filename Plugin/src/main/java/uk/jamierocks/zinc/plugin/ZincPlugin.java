@@ -23,8 +23,28 @@
  */
 package uk.jamierocks.zinc.plugin;
 
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.service.ProviderExistsException;
+import uk.jamierocks.zinc.CommandService;
 
-@Plugin(id = "zinc", name = "ZincPlugin", version = "@project.version@")
+@Plugin(id = "zinc",
+        name = "ZincPlugin",
+        version = "@project.version@")
 public class ZincPlugin {
+
+    @Inject private Game game;
+    @Inject private Logger logger;
+
+    public void onInit(GameInitializationEvent event) {
+        try {
+            this.game.getServiceManager()
+                    .setProvider(this, CommandService.class, new CommandService(this.game));
+        } catch (ProviderExistsException e) {
+            this.logger.error("Failed to register command service!", e);
+        }
+    }
 }
