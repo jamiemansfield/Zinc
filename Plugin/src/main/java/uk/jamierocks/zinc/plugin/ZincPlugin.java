@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.ProviderExistsException;
 import uk.jamierocks.zinc.CommandService;
@@ -41,7 +41,7 @@ public class ZincPlugin {
     @Inject private Logger logger;
 
     @Listener
-    public void onInit(GameInitializationEvent event) {
+    public void onInit(GamePreInitializationEvent event) {
         try {
             this.game.getServiceManager()
                     .setProvider(this, CommandService.class, new CommandService(this.game));
