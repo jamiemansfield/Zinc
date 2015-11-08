@@ -26,9 +26,11 @@ package uk.jamierocks.zinc;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandCallable;
+import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
@@ -41,6 +43,8 @@ import java.util.Map;
  * @author Jamie Mansfield.
  */
 public class CommandService {
+
+    private static final Logger ZINC_LOGGER = LoggerFactory.getLogger("Zinc");
 
     private final Game game;
 
@@ -61,7 +65,8 @@ public class CommandService {
                 Command command = method.getAnnotation(Command.class);
 
                 if (method.getParameterTypes()[0] == CommandSource.class &&
-                        method.getParameterTypes()[1] == String.class) {
+                        method.getParameterTypes()[1] == String.class &&
+                        method.getReturnType() == CommandResult.class) {
                     if (StringUtils.isEmpty(command.parent())) {
                         CommandCallable commandCallable =
                                 new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
@@ -77,8 +82,17 @@ public class CommandService {
                                         command, holder, method);
                         subCommands.put(commandCallable, command);
                     }
+                } else {
+                    if (method.getReturnType() != CommandResult.class) {
+                        ZINC_LOGGER.error(String.format("Command has wrong return type: %s#%s Should be %s",
+                                holder.getClass().getName(), method.getName(), CommandResult.class.getName()));
+                    }
+                    if (method.getParameterTypes()[0] != CommandSource.class ||
+                            method.getParameterTypes()[1] != String.class) {
+                        ZINC_LOGGER.error(String.format("Command has wrong argument types! Should be %s and %s",
+                                CommandSource.class.getName(), String.class.getName()));
+                    }
                 }
-
             }
         }
         for (CommandCallable commandCallable : subCommands.keySet()) {
