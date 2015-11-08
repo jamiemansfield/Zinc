@@ -42,6 +42,13 @@ import java.lang.annotation.Target;
 public @interface Command {
 
     /**
+     * Gets the parent of this command.
+     *
+     * @return the command's parent.
+     */
+    String parent() default "";
+
+    /**
      * Gets the name of the command.
      *
      * @return the command's name.

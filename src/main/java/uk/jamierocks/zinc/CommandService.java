@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
 import java.lang.reflect.Method;
 
@@ -54,14 +55,29 @@ public class CommandService {
         for (Method method : holder.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Command.class)) {
                 Command command = method.getAnnotation(Command.class);
+
                 if (method.getParameterTypes()[0] == CommandSource.class &&
                         method.getParameterTypes()[1] == String.class) {
-                    CommandCallable commandCallable =
-                            new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
-                                    command, holder, method);
-                    this.game.getCommandDispatcher()
-                            .register(plugin, commandCallable, Lists.asList(command.name(), command.aliases()));
+                    if (command.parent() == "") {
+                        CommandCallable commandCallable =
+                                new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
+                                        command, holder, method);
+                        SimpleDispatcher dispatcher = new SimpleDispatcher();
+                        dispatcher.register(commandCallable, "");
+
+                        this.game.getCommandDispatcher()
+                                .register(plugin, dispatcher, Lists.asList(command.name(), command.aliases()));
+                    } else {
+                        CommandCallable commandCallable =
+                                new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
+                                        command, holder, method);
+                        SimpleDispatcher dispatcher =
+                                (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
+                                        .getCallable();
+                        dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
+                    }
                 }
+
             }
         }
     }
