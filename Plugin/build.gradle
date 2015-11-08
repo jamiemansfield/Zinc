@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.2'
+        classpath 'gradle.plugin.net.ellune:blossom:1.0.1'
+    }
+}
+apply plugin: 'java'
+apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'net.ellune.blossom'
+
+group = 'uk.jamierocks.zinc'
+description = 'ZincPlugin - Zinc in a plugin.'
+
+dependencies {
+    compile rootProject
+}
+
+blossom {
+    replaceToken '@project.version@',
+            project.version, 'src/main/java/uk/jamierocks/zinc/ZincPlugin.java'
+}
+
+license {
+    header rootProject.file('HEADER.txt')
+    include '**/*.java'
+    include '**/*.groovy'
+
+    strictCheck true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+shadowJar {
+    dependencies {
+        include project(rootProject.path)
+    }
+    classifier = ''
+}
+assemble.dependsOn shadowJar

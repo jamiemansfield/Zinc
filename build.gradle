@@ -9,20 +9,23 @@ plugins {
 
 defaultTasks 'licenseFormat'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+allprojects {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-group = 'uk.jamierocks'
-version = '1.0-SNAPSHOT'
-description = 'Zinc - A simple annotation based command framework for Sponge.'
+    version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-    maven {
-        name 'sponge'
-        url 'http://repo.spongepowered.org/maven'
+    repositories {
+        mavenCentral()
+        maven {
+            name 'sponge'
+            url 'http://repo.spongepowered.org/maven'
+        }
     }
 }
+
+group = 'uk.jamierocks'
+description = 'Zinc - A simple annotation based command framework for Sponge.'
 
 dependencies {
     compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'

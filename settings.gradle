@@ -1,2 +1,3 @@
 rootProject.name = 'zinc'
+include 'Plugin'
 
