@@ -1,0 +1,44 @@
+plugins {
+    id 'groovy'
+
+    id 'eclipse'
+    id 'idea'
+
+    id 'com.github.hierynomus.license' version '0.11.0'
+}
+
+defaultTasks 'licenseFormat'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'uk.jamierocks'
+version = '1.0-SNAPSHOT'
+description = 'Zinc - A simple annotation based command framework for Sponge.'
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'sponge'
+        url 'http://repo.spongepowered.org/maven'
+    }
+}
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:2.1-SNAPSHOT'
+}
+
+license {
+    header file('HEADER.txt')
+    include '**/*.java'
+    include '**/*.groovy'
+
+    strictCheck true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.8'
+}
