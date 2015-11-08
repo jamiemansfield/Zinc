@@ -24,6 +24,8 @@
 package uk.jamierocks.zinc;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandCallable;
@@ -31,6 +33,7 @@ import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Represents a command service, for Zinc commands.
@@ -52,13 +55,14 @@ public class CommandService {
      * @param holder the command holder.
      */
     public void registerCommands(Object plugin, Object holder) {
+        Map<CommandCallable, Command> subCommands = Maps.newHashMap();
         for (Method method : holder.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Command.class)) {
                 Command command = method.getAnnotation(Command.class);
 
                 if (method.getParameterTypes()[0] == CommandSource.class &&
                         method.getParameterTypes()[1] == String.class) {
-                    if (command.parent() == "") {
+                    if (StringUtils.isEmpty(command.parent())) {
                         CommandCallable commandCallable =
                                 new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
                                         command, holder, method);
@@ -71,14 +75,18 @@ public class CommandService {
                         CommandCallable commandCallable =
                                 new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
                                         command, holder, method);
-                        SimpleDispatcher dispatcher =
-                                (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
-                                        .getCallable();
-                        dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
+                        subCommands.put(commandCallable, command);
                     }
                 }
 
             }
+        }
+        for (CommandCallable commandCallable : subCommands.keySet()) {
+            Command command = subCommands.get(commandCallable);
+            SimpleDispatcher dispatcher =
+                    (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
+                            .getCallable();
+            dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
         }
     }
 }
