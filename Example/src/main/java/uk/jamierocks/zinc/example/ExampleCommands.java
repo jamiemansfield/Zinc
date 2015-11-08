@@ -21,32 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package uk.jamierocks.zinc.plugin;
+package uk.jamierocks.zinc.example;
 
-import com.google.inject.Inject;
-import org.slf4j.Logger;
-import org.spongepowered.api.Game;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.ProviderExistsException;
-import uk.jamierocks.zinc.CommandService;
+import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandResult;
+import org.spongepowered.api.util.command.CommandSource;
+import uk.jamierocks.zinc.Command;
 
-@Plugin(id = "zinc",
-        name = "ZincPlugin",
-        version = "@project.version@")
-public class ZincPlugin {
+public class ExampleCommands {
 
-    @Inject private Game game;
-    @Inject private Logger logger;
+    @Command(name = "example")
+    public CommandResult exampleCommand(CommandSource source, String arguments) {
+        source.sendMessage(Texts.of("This is the base command."));
+        return CommandResult.success();
+    }
 
-    @Listener
-    public void onInit(GameInitializationEvent event) {
-        try {
-            this.game.getServiceManager()
-                    .setProvider(this, CommandService.class, new CommandService(this.game));
-        } catch (ProviderExistsException e) {
-            this.logger.error("Failed to register command service!", e);
-        }
+    @Command(parent = "example",
+            name = "sub")
+    public CommandResult exampleSubCommand(CommandSource source, String arguments) {
+        source.sendMessage(Texts.of("This is a sub command."));
+        return CommandResult.success();
     }
 }

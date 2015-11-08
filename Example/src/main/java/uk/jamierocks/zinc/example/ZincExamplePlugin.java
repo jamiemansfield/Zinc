@@ -21,32 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package uk.jamierocks.zinc.plugin;
+package uk.jamierocks.zinc.example;
 
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.ProviderExistsException;
 import uk.jamierocks.zinc.CommandService;
 
-@Plugin(id = "zinc",
-        name = "ZincPlugin",
-        version = "@project.version@")
-public class ZincPlugin {
+@Plugin(id = "zinc-example",
+        name = "ZincExamplePlugin",
+        version ="@project.version@",
+        dependencies = "required-after:zinc")
+public class ZincExamplePlugin {
 
     @Inject private Game game;
     @Inject private Logger logger;
 
     @Listener
-    public void onInit(GameInitializationEvent event) {
-        try {
-            this.game.getServiceManager()
-                    .setProvider(this, CommandService.class, new CommandService(this.game));
-        } catch (ProviderExistsException e) {
-            this.logger.error("Failed to register command service!", e);
+    public void onInit(GameStartedServerEvent event) {
+        if (this.game.getServiceManager().provide(CommandService.class).isPresent()) {
+            this.game.getServiceManager().provide(CommandService.class).get()
+                    .registerCommands(this, new ExampleCommands());
+        } else {
+            this.logger.info("somethign failed :/");
         }
     }
 }

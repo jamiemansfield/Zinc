@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'gradle.plugin.net.ellune:blossom:1.0.1'
+    }
+}
+apply plugin: 'java'
+apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'net.ellune.blossom'
+
+group = 'uk.jamierocks.zinc'
+archivesBaseName = 'ZincExample'
+description = 'ZincExample - Zinc example.'
+
+dependencies {
+    compile rootProject
+}
+
+blossom {
+    replaceToken '@project.version@',
+            project.version, 'src/main/java/uk/jamierocks/zinc/example/ZincExamplePlugin.java'
+}
+
+license {
+    header rootProject.file('HEADER.txt')
+    include '**/*.java'
+    include '**/*.groovy'
+
+    strictCheck true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
