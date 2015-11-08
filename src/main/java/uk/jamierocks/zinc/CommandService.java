@@ -64,22 +64,21 @@ public class CommandService {
             if (method.isAnnotationPresent(Command.class)) {
                 Command command = method.getAnnotation(Command.class);
 
-                if (method.getParameterTypes()[0] == CommandSource.class &&
+                if (method.getParameterTypes().length == 2 &&
+                        method.getParameterTypes()[0] == CommandSource.class &&
                         method.getParameterTypes()[1] == String.class &&
                         method.getReturnType() == CommandResult.class) {
+
+                    CommandCallable commandCallable =
+                            new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
+                                    command, holder, method);
                     if (StringUtils.isEmpty(command.parent())) {
-                        CommandCallable commandCallable =
-                                new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
-                                        command, holder, method);
                         SimpleDispatcher dispatcher = new SimpleDispatcher();
                         dispatcher.register(commandCallable, "");
 
                         this.game.getCommandDispatcher()
                                 .register(plugin, dispatcher, Lists.asList(command.name(), command.aliases()));
                     } else {
-                        CommandCallable commandCallable =
-                                new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
-                                        command, holder, method);
                         subCommands.put(commandCallable, command);
                     }
                 } else {
@@ -87,7 +86,8 @@ public class CommandService {
                         ZINC_LOGGER.error(String.format("Command has wrong return type: %s#%s Should be %s",
                                 holder.getClass().getName(), method.getName(), CommandResult.class.getName()));
                     }
-                    if (method.getParameterTypes()[0] != CommandSource.class ||
+                    if (method.getParameterTypes().length != 2 ||
+                            method.getParameterTypes()[0] != CommandSource.class ||
                             method.getParameterTypes()[1] != String.class) {
                         ZINC_LOGGER.error(String.format("Command has wrong argument types! Should be %s and %s",
                                 CommandSource.class.getName(), String.class.getName()));
