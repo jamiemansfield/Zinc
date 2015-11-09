@@ -26,19 +26,20 @@ package uk.jamierocks.zinc.example;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandArgs;
 import uk.jamierocks.zinc.Command;
 
 public class ExampleCommands {
 
     @Command(name = "example")
-    public CommandResult exampleCommand(CommandSource source, String arguments) {
+    public CommandResult exampleCommand(CommandSource source, CommandArgs arguments) {
         source.sendMessage(Texts.of("This is the base command."));
         return CommandResult.success();
     }
 
     @Command(parent = "example",
             name = "sub")
-    public CommandResult exampleSubCommand(CommandSource source, String arguments) {
+    public CommandResult exampleSubCommand(CommandSource source, CommandArgs arguments) {
         source.sendMessage(Texts.of("This is a sub command."));
         return CommandResult.success();
     }

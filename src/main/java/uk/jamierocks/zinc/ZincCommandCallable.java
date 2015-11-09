@@ -31,20 +31,23 @@ import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandArgs;
+import org.spongepowered.api.util.command.args.parsing.InputTokenizer;
+import org.spongepowered.api.util.command.args.parsing.InputTokenizers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
-class SpongeCommandCallable implements CommandCallable {
+class ZincCommandCallable implements CommandCallable {
 
     private final Logger logger;
     private final Command command;
     private final Object instance;
     private final Method method;
 
-    protected SpongeCommandCallable(Logger logger, Command command, Object instance, Method method) {
+    protected ZincCommandCallable(Logger logger, Command command, Object instance, Method method) {
         this.logger = logger;
         this.command = command;
         this.instance = instance;
@@ -54,7 +57,9 @@ class SpongeCommandCallable implements CommandCallable {
     @Override
     public CommandResult process(CommandSource source, String arguments) throws CommandException {
         try {
-            return (CommandResult) this.method.invoke(this.instance, source, arguments);
+            return (CommandResult) this.method.invoke(this.instance, source,
+                    new CommandArgs(arguments, InputTokenizers.quotedStrings(false)
+                            .tokenize(arguments, false)));
         } catch (IllegalAccessException e) {
             this.logger.error("Failed to invoke instance", e);
         } catch (InvocationTargetException e) {

@@ -32,6 +32,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.util.command.args.CommandArgs;
 import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
 import java.lang.reflect.Method;
@@ -66,11 +67,11 @@ public class CommandService {
 
                 if (method.getParameterTypes().length == 2 &&
                         method.getParameterTypes()[0] == CommandSource.class &&
-                        method.getParameterTypes()[1] == String.class &&
+                        method.getParameterTypes()[1] == CommandArgs.class &&
                         method.getReturnType() == CommandResult.class) {
 
                     CommandCallable commandCallable =
-                            new SpongeCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
+                            new ZincCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
                                     command, holder, method);
                     if (StringUtils.isEmpty(command.parent())) {
                         SimpleDispatcher dispatcher = new SimpleDispatcher();
@@ -88,9 +89,10 @@ public class CommandService {
                     }
                     if (method.getParameterTypes().length != 2 ||
                             method.getParameterTypes()[0] != CommandSource.class ||
-                            method.getParameterTypes()[1] != String.class) {
-                        ZINC_LOGGER.error(String.format("Command has wrong argument types! Should be %s and %s",
-                                CommandSource.class.getName(), String.class.getName()));
+                            method.getParameterTypes()[1] != CommandArgs.class) {
+                        ZINC_LOGGER.error(String.format("Command has wrong argument types: %s#%s Should have %s and %s",
+                                holder.getClass().getName(), method.getName(),
+                                CommandSource.class.getName(), CommandArgs.class.getName()));
                     }
                 }
             }
