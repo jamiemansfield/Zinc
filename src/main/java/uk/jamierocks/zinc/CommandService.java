@@ -33,9 +33,10 @@ import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandArgs;
-import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,6 +62,7 @@ public class CommandService {
      */
     public void registerCommands(Object plugin, Object holder) {
         Map<CommandCallable, Command> subCommands = Maps.newHashMap();
+        Logger pluginLogger = LoggerFactory.getLogger(plugin.getClass());
         for (Method method : holder.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Command.class)) {
                 Command command = method.getAnnotation(Command.class);
@@ -71,8 +73,7 @@ public class CommandService {
                         method.getReturnType() == CommandResult.class) {
 
                     CommandCallable commandCallable =
-                            new ZincCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
-                                    command, holder, method);
+                            new ZincCommandCallable(pluginLogger, command, holder, method);
                     if (StringUtils.isEmpty(command.parent())) {
                         this.game.getCommandDispatcher()
                                 .register(plugin, new ZincDispatcher(commandCallable),
@@ -91,6 +92,49 @@ public class CommandService {
                         ZINC_LOGGER.error(String.format("Command has wrong argument types: %s#%s Should have %s and %s",
                                 holder.getClass().getName(), method.getName(),
                                 CommandSource.class.getName(), CommandArgs.class.getName()));
+                    }
+                }
+            } else if (method.isAnnotationPresent(TabComplete.class)) {
+                TabComplete tabComplete = method.getAnnotation(TabComplete.class);
+
+                if (method.getParameterTypes().length == 2 &&
+                        method.getParameterTypes()[0] == CommandSource.class &&
+                        method.getParameterTypes()[1] == String.class &&
+                        method.getReturnType() == List.class) {
+
+                    final ZincDispatcher.SuggestionHandler suggestionHandler = (src, arguments) -> {
+                        try {
+                            return (List<String>) method.invoke(holder, src, arguments);
+                        } catch (IllegalAccessException e) {
+                            pluginLogger.error("Failed to invoke instance", e);
+                        } catch (InvocationTargetException e) {
+                            pluginLogger.error("Failed to invoke instance", e);
+                        }
+                        return Lists.newArrayList();
+                    };
+                    if (this.game.getCommandDispatcher().get(tabComplete.name()).isPresent() &&
+                            this.game.getCommandDispatcher().get(tabComplete.name()).get()
+                                    .getCallable() instanceof ZincDispatcher) {
+                        ZincDispatcher dispatcher =
+                                (ZincDispatcher) this.game.getCommandDispatcher().get(tabComplete.name()).get()
+                                        .getCallable();
+                        dispatcher.setSuggestionHandler(suggestionHandler);
+                    } else {
+                        ZINC_LOGGER.error(
+                                String.format("Tab complete attempted to register, but parent command wasn't found: %s",
+                                        tabComplete.name()));
+                    }
+                } else {
+                    if (method.getReturnType() != List.class) {
+                        ZINC_LOGGER.error(String.format("Tab complete has wrong return type: %s#%s Should be %s",
+                                holder.getClass().getName(), method.getName(), List.class.getName()));
+                    }
+                    if (method.getParameterTypes().length != 2 ||
+                            method.getParameterTypes()[0] != CommandSource.class ||
+                            method.getParameterTypes()[1] != String.class) {
+                        ZINC_LOGGER.error(String.format("Tab complete has wrong argument types: %s#%s Should have %s and %s",
+                                holder.getClass().getName(), method.getName(),
+                                CommandSource.class.getName(), String.class.getName()));
                     }
                 }
             }
