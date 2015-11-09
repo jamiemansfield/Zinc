@@ -74,11 +74,9 @@ public class CommandService {
                             new ZincCommandCallable(LoggerFactory.getLogger(plugin.getClass()),
                                     command, holder, method);
                     if (StringUtils.isEmpty(command.parent())) {
-                        SimpleDispatcher dispatcher = new SimpleDispatcher();
-                        dispatcher.register(commandCallable, "");
-
                         this.game.getCommandDispatcher()
-                                .register(plugin, dispatcher, Lists.asList(command.name(), command.aliases()));
+                                .register(plugin, new ZincDispatcher(commandCallable),
+                                        Lists.asList(command.name(), command.aliases()));
                     } else {
                         subCommands.put(commandCallable, command);
                     }
@@ -101,9 +99,9 @@ public class CommandService {
             Command command = subCommands.get(commandCallable);
             if (this.game.getCommandDispatcher().get(command.parent()).isPresent() &&
                     this.game.getCommandDispatcher().get(command.parent()).get()
-                            .getCallable() instanceof SimpleDispatcher) {
-                SimpleDispatcher dispatcher =
-                        (SimpleDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
+                            .getCallable() instanceof ZincDispatcher) {
+                ZincDispatcher dispatcher =
+                        (ZincDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
                                 .getCallable();
                 dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
             } else {

@@ -32,7 +32,6 @@ import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandArgs;
-import org.spongepowered.api.util.command.args.parsing.InputTokenizer;
 import org.spongepowered.api.util.command.args.parsing.InputTokenizers;
 
 import java.lang.reflect.InvocationTargetException;
