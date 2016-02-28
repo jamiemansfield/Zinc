@@ -29,7 +29,6 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.service.ProviderExistsException;
 import uk.jamierocks.zinc.CommandService;
 
 @Plugin(id = "zinc",
@@ -42,11 +41,7 @@ public class ZincPlugin {
 
     @Listener
     public void onInit(GamePreInitializationEvent event) {
-        try {
-            this.game.getServiceManager()
-                    .setProvider(this, CommandService.class, new CommandService(this.game));
-        } catch (ProviderExistsException e) {
-            this.logger.error("Failed to register command service!", e);
-        }
+       this.game.getServiceManager()
+                .setProvider(this, CommandService.class, new CommandService(this.game));
     }
 }

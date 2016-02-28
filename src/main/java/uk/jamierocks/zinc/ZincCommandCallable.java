@@ -25,14 +25,13 @@ package uk.jamierocks.zinc;
 
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandArgs;
+import org.spongepowered.api.command.args.parsing.InputTokenizers;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandArgs;
-import org.spongepowered.api.util.command.args.parsing.InputTokenizers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -82,7 +81,7 @@ class ZincCommandCallable implements CommandCallable {
 
     @Override
     public Optional<Text> getShortDescription(CommandSource source) {
-        return Optional.of(Texts.of(this.command.description()));
+        return Optional.of(Text.of(this.command.description()));
     }
 
     @Override
@@ -92,6 +91,6 @@ class ZincCommandCallable implements CommandCallable {
 
     @Override
     public Text getUsage(CommandSource source) {
-        return Texts.of(this.command.usage());
+        return Text.of(this.command.usage());
     }
 }

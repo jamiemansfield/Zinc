@@ -23,9 +23,8 @@
  */
 package uk.jamierocks.zinc;
 
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandSource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -64,7 +63,7 @@ public @interface Command {
 
     /**
      * Gets the description of this command.
-     * Converted to {@link Text}, using {@link Texts#of(String)}.
+     * Converted to {@link Text}, using {@link Text#of(String)}.
      *
      * @return the command's description.
      */
@@ -72,7 +71,7 @@ public @interface Command {
 
     /**
      * Gets the usage of this command.
-     * Converted to {@link Text}, using {@link Texts#of(String)}.
+     * Converted to {@link Text}, using {@link Text#of(String)}.
      *
      * @return the command's usage.
      */

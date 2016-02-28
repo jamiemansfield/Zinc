@@ -24,9 +24,8 @@
 package uk.jamierocks.zinc;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.spongepowered.api.command.CommandMessageFormatting.SPACE_TEXT;
 import static org.spongepowered.api.util.SpongeApiTranslationHelper.t;
-import static org.spongepowered.api.util.command.CommandMessageFormatting.NEWLINE_TEXT;
-import static org.spongepowered.api.util.command.CommandMessageFormatting.SPACE_TEXT;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -36,25 +35,23 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.apache.commons.lang3.StringUtils;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandException;
+import org.spongepowered.api.command.CommandMapping;
+import org.spongepowered.api.command.CommandMessageFormatting;
+import org.spongepowered.api.command.CommandNotFoundException;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.ImmutableCommandMapping;
+import org.spongepowered.api.command.dispatcher.Disambiguator;
+import org.spongepowered.api.command.dispatcher.Dispatcher;
+import org.spongepowered.api.command.dispatcher.SimpleDispatcher;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.util.GuavaCollectors;
 import org.spongepowered.api.util.StartsWithPredicate;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandException;
-import org.spongepowered.api.util.command.CommandMapping;
-import org.spongepowered.api.util.command.CommandMessageFormatting;
-import org.spongepowered.api.util.command.CommandNotFoundException;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.ImmutableCommandMapping;
-import org.spongepowered.api.util.command.dispatcher.Disambiguator;
-import org.spongepowered.api.util.command.dispatcher.Dispatcher;
-import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -76,7 +73,7 @@ import javax.annotation.Nullable;
  * @author SpongePowered
  * @author Jamie Mansfield
  */
-final class ZincDispatcher implements Dispatcher {
+public final class ZincDispatcher implements Dispatcher {
 
     /**
      * This is a disambiguator function that returns the first matching command.
@@ -93,7 +90,7 @@ final class ZincDispatcher implements Dispatcher {
     private final Disambiguator disambiguatorFunc;
     private final ListMultimap<String, CommandMapping> commands = ArrayListMultimap.create();
 
-    // Zinc extra
+    // Zinc
     private final CommandCallable baseCommand;
     private SuggestionHandler suggestionHandler = (src, arguments) -> {
         final String[] argSplit = arguments.split(" ", 2);
@@ -287,7 +284,7 @@ final class ZincDispatcher implements Dispatcher {
 
     @Override
     public synchronized Set<String> getPrimaryAliases() {
-        Set<String> aliases = new HashSet<String>();
+        Set<String> aliases = new HashSet<>();
 
         for (CommandMapping mapping : this.commands.values()) {
             aliases.add(mapping.getPrimaryAlias());
@@ -298,7 +295,7 @@ final class ZincDispatcher implements Dispatcher {
 
     @Override
     public synchronized Set<String> getAliases() {
-        Set<String> aliases = new HashSet<String>();
+        Set<String> aliases = new HashSet<>();
 
         for (CommandMapping mapping : this.commands.values()) {
             aliases.addAll(mapping.getAllAliases());
@@ -312,18 +309,12 @@ final class ZincDispatcher implements Dispatcher {
         return get(alias, null);
     }
 
-    /**
-     * Get a given command in the context of a certain command source.
-     *
-     * @param alias The alias to look up
-     * @param source The source this alias is being looked up for
-     * @return the command if exactly one matches
-     */
+    @Override
     public synchronized Optional<CommandMapping> get(String alias, @Nullable CommandSource source) {
         List<CommandMapping> results = this.commands.get(alias.toLowerCase());
         if (results.size() == 1) {
             return Optional.of(results.get(0));
-        } else if (results.size() == 0 || source == null) {
+        } else if (results.size() == 0) {
             return Optional.empty();
         } else {
             return this.disambiguatorFunc.disambiguate(source, alias, results);
@@ -394,7 +385,7 @@ final class ZincDispatcher implements Dispatcher {
         if (this.commands.isEmpty()) {
             return Optional.empty();
         }
-        TextBuilder build = t("Available commands:\n").builder();
+        Text.Builder build = t("Available commands:\n").toBuilder();
         for (Iterator<String> it = filterCommands(source).iterator(); it.hasNext();) {
             final Optional<CommandMapping> mappingOpt = get(it.next(), source);
             if (!mappingOpt.isPresent()) {
@@ -403,13 +394,13 @@ final class ZincDispatcher implements Dispatcher {
             CommandMapping mapping = mappingOpt.get();
             @SuppressWarnings("unchecked")
             final Optional<Text> description = (Optional<Text>) mapping.getCallable().getShortDescription(source);
-            build.append(Texts.builder(mapping.getPrimaryAlias())
+            build.append(Text.builder(mapping.getPrimaryAlias())
                             .color(TextColors.GREEN)
                             .style(TextStyles.UNDERLINE)
                             .onClick(TextActions.suggestCommand("/" + mapping.getPrimaryAlias())).build(),
                     SPACE_TEXT, description.orElse(mapping.getCallable().getUsage(source)));
             if (it.hasNext()) {
-                build.append(NEWLINE_TEXT);
+                build.append(Text.NEW_LINE);
             }
         }
         return Optional.of(build.build());
@@ -420,7 +411,7 @@ final class ZincDispatcher implements Dispatcher {
     }
 
     /**
-     * Get the number of registered aliases.
+     * Gets the number of registered aliases.
      *
      * @return The number of aliases
      */
@@ -430,7 +421,7 @@ final class ZincDispatcher implements Dispatcher {
 
     @Override
     public Text getUsage(final CommandSource source) {
-        final TextBuilder build = Texts.builder();
+        final Text.Builder build = Text.builder();
         Iterable<String> filteredCommands = filterCommands(source).stream()
                 .filter(input -> {
                     if (input == null) {
@@ -442,7 +433,7 @@ final class ZincDispatcher implements Dispatcher {
                 .collect(Collectors.toList());
 
         for (Iterator<String> it = filteredCommands.iterator(); it.hasNext();) {
-            build.append(Texts.of(it.next()));
+            build.append(Text.of(it.next()));
             if (it.hasNext()) {
                 build.append(CommandMessageFormatting.PIPE_TEXT);
             }

@@ -29,10 +29,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.Game;
-import org.spongepowered.api.util.command.CommandCallable;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandArgs;
+import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandArgs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -75,7 +75,7 @@ public class CommandService {
                     CommandCallable commandCallable =
                             new ZincCommandCallable(pluginLogger, command, holder, method);
                     if (StringUtils.isEmpty(command.parent())) {
-                        this.game.getCommandDispatcher()
+                        this.game.getCommandManager()
                                 .register(plugin, new ZincDispatcher(commandCallable),
                                         Lists.asList(command.name(), command.aliases()));
                     } else {
@@ -112,11 +112,11 @@ public class CommandService {
                         }
                         return Lists.newArrayList();
                     };
-                    if (this.game.getCommandDispatcher().get(tabComplete.name()).isPresent() &&
-                            this.game.getCommandDispatcher().get(tabComplete.name()).get()
+                    if (this.game.getCommandManager().get(tabComplete.name()).isPresent() &&
+                            this.game.getCommandManager().get(tabComplete.name()).get()
                                     .getCallable() instanceof ZincDispatcher) {
                         ZincDispatcher dispatcher =
-                                (ZincDispatcher) this.game.getCommandDispatcher().get(tabComplete.name()).get()
+                                (ZincDispatcher) this.game.getCommandManager().get(tabComplete.name()).get()
                                         .getCallable();
                         dispatcher.setSuggestionHandler(suggestionHandler);
                     } else {
@@ -141,11 +141,11 @@ public class CommandService {
         }
         for (CommandCallable commandCallable : subCommands.keySet()) {
             Command command = subCommands.get(commandCallable);
-            if (this.game.getCommandDispatcher().get(command.parent()).isPresent() &&
-                    this.game.getCommandDispatcher().get(command.parent()).get()
+            if (this.game.getCommandManager().get(command.parent()).isPresent() &&
+                    this.game.getCommandManager().get(command.parent()).get()
                             .getCallable() instanceof ZincDispatcher) {
                 ZincDispatcher dispatcher =
-                        (ZincDispatcher) this.game.getCommandDispatcher().get(command.parent()).get()
+                        (ZincDispatcher) this.game.getCommandManager().get(command.parent()).get()
                                 .getCallable();
                 dispatcher.register(commandCallable, Lists.asList(command.name(), command.aliases()));
             } else {

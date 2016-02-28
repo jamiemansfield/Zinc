@@ -24,10 +24,10 @@
 package uk.jamierocks.zinc.example;
 
 import com.google.common.collect.Lists;
-import org.spongepowered.api.text.Texts;
-import org.spongepowered.api.util.command.CommandResult;
-import org.spongepowered.api.util.command.CommandSource;
-import org.spongepowered.api.util.command.args.CommandArgs;
+import org.spongepowered.api.command.CommandResult;
+import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.command.args.CommandArgs;
+import org.spongepowered.api.text.Text;
 import uk.jamierocks.zinc.Command;
 import uk.jamierocks.zinc.TabComplete;
 
@@ -37,14 +37,14 @@ public class ExampleCommands {
 
     @Command(name = "example")
     public CommandResult exampleCommand(CommandSource source, CommandArgs args) {
-        source.sendMessage(Texts.of("This is the base command."));
+        source.sendMessage(Text.of("This is the base command."));
         return CommandResult.success();
     }
 
     @Command(parent = "example",
             name = "sub")
     public CommandResult exampleSubCommand(CommandSource source, CommandArgs args) {
-        source.sendMessage(Texts.of("This is a sub command."));
+        source.sendMessage(Text.of("This is a sub command."));
         return CommandResult.success();
     }
 
