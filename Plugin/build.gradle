@@ -10,7 +10,7 @@ buildscript {
     }
 }
 apply plugin: 'java'
-apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'net.minecrell.licenser'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'net.ellune.blossom'
 
@@ -30,12 +30,7 @@ blossom {
 license {
     header rootProject.file('HEADER.txt')
     include '**/*.java'
-    include '**/*.groovy'
-
-    strictCheck true
-    mapping {
-        java = 'SLASHSTAR_STYLE'
-    }
+    newLine = false
 }
 
 shadowJar {

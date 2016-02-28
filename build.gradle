@@ -4,7 +4,7 @@ plugins {
     id 'eclipse'
     id 'idea'
 
-    id 'com.github.hierynomus.license' version '0.11.0'
+    id 'net.minecrell.licenser' version '0.1.2'
 }
 
 defaultTasks 'licenseFormat'
@@ -34,14 +34,9 @@ dependencies {
 license {
     header file('HEADER.txt')
     include '**/*.java'
-    include '**/*.groovy'
-
-    strictCheck true
-    mapping {
-        java = 'SLASHSTAR_STYLE'
-    }
+    newLine = false
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.8'
+    gradleVersion = '2.11'
 }

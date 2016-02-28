@@ -9,7 +9,7 @@ buildscript {
     }
 }
 apply plugin: 'java'
-apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'net.minecrell.licenser'
 apply plugin: 'net.ellune.blossom'
 
 group = 'uk.jamierocks.zinc'
@@ -28,10 +28,5 @@ blossom {
 license {
     header rootProject.file('HEADER.txt')
     include '**/*.java'
-    include '**/*.groovy'
-
-    strictCheck true
-    mapping {
-        java = 'SLASHSTAR_STYLE'
-    }
+    newLine = false
 }

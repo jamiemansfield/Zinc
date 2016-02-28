@@ -1,7 +1,7 @@
 /*
  * This file is part of Zinc, licensed under the MIT License (MIT).
  *
- * Copyright (c) 2015, Jamie Mansfield <https://github.com/jamierocks>
+ * Copyright (c) 2015-2016, Jamie Mansfield <https://github.com/jamierocks>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ public class ZincExamplePlugin {
             this.game.getServiceManager().provide(CommandService.class).get()
                     .registerCommands(this, new ExampleCommands());
         } else {
-            this.logger.info("somethign failed :/");
+            this.logger.info("The CommandService was not present!");
         }
     }
 }
